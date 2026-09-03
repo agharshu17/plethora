@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "runtime": "plethora-bit@2",
+  "entry": "main.js",
+  "title": "Gym Trainer",
+  "description": "A training week with an animated coach who shows you how to do it right. Every exercise plays as one continuous demonstration in two parts: setup, which is how you stand and pick the weight up, and train, which is the working posture. No rep counters and no countdowns — your sets, reps, load and the exact travel of every rep are written out, and you tap Done when you have finished. Finish a day and that date is ticked on your calendar.",
+  "tags": ["fitness", "workout", "gym", "trainer", "coach", "exercise", "health", "form", "technique"],
+  "permissions": ["haptics", "storage", "backgroundMusic"],
+  "dependencies": [],
+  "memory": {
+    "local": {
+      "gym_state": { "label": "Training log" }
+    },
+    "records": {
+      "gym_streak": {
+        "label": "Day streak",
+        "valueType": "number",
+        "order": "desc",
+        "format": "integer",
+        "dedupe": "best_per_user"
+      }
+    }
+  }
+}
