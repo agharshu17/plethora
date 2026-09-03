@@ -1,0 +1,9 @@
+*.png
+_dev.js
+_main.dev.js
+build/
+next/_dev.js
+node_modules/
+package-lock.json
+package.json
+shots/
