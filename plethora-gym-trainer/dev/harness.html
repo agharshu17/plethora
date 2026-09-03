@@ -1,0 +1,151 @@
+<!doctype html>
+<!-- Local preview harness. Not part of the uploaded Bit. -->
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  html,body{margin:0;background:#05060f;height:100%;}
+  #bit{position:relative;width:100vw;height:100vh;overflow:hidden;}
+</style>
+</head>
+<body>
+<div id="bit"></div>
+<script>
+window.__log = [];
+(function () {
+  var container = document.getElementById('bit');
+  var frameCbs = [];
+  var now = 0;
+  var store = {};
+  var mem = {};
+
+  function el(tag, style) {
+    var e = document.createElement(tag);
+    e.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;' + (style || '');
+    container.appendChild(e);
+    return e;
+  }
+
+  var ctx = {
+    container: container,
+    get width() { return container.clientWidth; },
+    get height() { return container.clientHeight; },
+    dpr: window.devicePixelRatio || 1,
+    nativeDpr: window.devicePixelRatio || 1,
+    safeArea: { top: 12, bottom: 20, left: 0, right: 0 },
+    manifest: {},
+    runtime: { version: 'plethora-bit@2', schemaVersion: 1 },
+    capabilities: { audio: true, backgroundMusic: true, camera: false, haptics: true, microphone: false, motion: false, storage: true },
+    markVisualReady: function (r) { window.__log.push(['markVisualReady', r]); },
+    createRoot: function () { return el('div'); },
+    createCanvas2D: function () {
+      var c = el('canvas');
+      var g = c.getContext('2d');
+      function size() {
+        c.width = container.clientWidth * ctx.dpr;
+        c.height = container.clientHeight * ctx.dpr;
+        c.style.width = container.clientWidth + 'px';
+        c.style.height = container.clientHeight + 'px';
+        g.setTransform(ctx.dpr, 0, 0, ctx.dpr, 0, 0);
+      }
+      size();
+      window.addEventListener('resize', size);
+      return c;
+    },
+    createCanvas: function () { return el('canvas'); },
+    platform: {
+      ready: function (p) { window.__log.push(['ready', p]); },
+      start: function (p) { window.__log.push(['start', p]); },
+      interact: function () {},
+      setScore: function () {},
+      setProgress: function (v) { window.__progress = v; },
+      milestone: function (n) { window.__log.push(['milestone', n]); },
+      complete: function (p) { window.__log.push(['complete', p]); },
+      fail: function () {},
+      error: function (p) { window.__log.push(['error', p]); },
+      emit: function () {},
+      haptic: function () {}
+    },
+    listen: function (t, n, h, o) { t.addEventListener(n, h, o); },
+    onFrame: function (cb) { frameCbs.push(cb); },
+    raf: function (cb) { frameCbs.push(cb); },
+    timeout: function (fn, ms) { return setTimeout(fn, ms); },
+    interval: function (fn, ms) { return setInterval(fn, ms); },
+    onDestroy: function () {},
+    loadScript: function () { return Promise.resolve(); },
+    importModule: function () { return Promise.resolve({}); },
+    loadFont: function () { return Promise.resolve(null); },
+    registry: { resources: function () { return Promise.resolve({}); } },
+    fetch: function () { return Promise.reject(new Error('blocked')); },
+    music: {
+      presets: [], scales: [], stings: [],
+      unlock: function () { return Promise.resolve('ready'); },
+      play: function () { return Promise.resolve(handle); },
+      start: function () { return Promise.resolve(handle); },
+      stop: function () {}, pause: function () {}, resume: function () {},
+      setVolume: function () {}, setPreset: function () {}, setTempo: function () {},
+      setIntensity: function () {}, setScale: function () {}, setPattern: function () {},
+      duck: function () {}, sting: function () { return Promise.resolve(); },
+      state: function () { return 'playing'; }, details: function () { return {}; },
+      error: function () { return null; }, ready: function () { return true; },
+      playing: true, preset: 'lofi'
+    },
+    audio: { play: function () { return handle; }, loop: function () { return handle; }, stopAll: function () {} },
+    storage: {
+      get: function (k) { return Promise.resolve(store[k] || null); },
+      set: function (k, v) { store[k] = v; return Promise.resolve({ ok: true }); },
+      remove: function (k) { delete store[k]; return Promise.resolve({ ok: true }); },
+      clear: function () { store = {}; return Promise.resolve({ ok: true }); }
+    },
+    memory: {
+      local: function (id) {
+        return {
+          get: function () { return Promise.resolve(mem[id] || null); },
+          set: function (v) { mem[id] = v; return Promise.resolve({ ok: true }); }
+        };
+      },
+      record: function () { return { submit: function () { return Promise.resolve({ ok: true }); }, leaderboard: function () { return Promise.resolve({ entries: [] }); } }; },
+      tally: function () { return { choose: function () { return Promise.resolve({}); }, results: function () { return Promise.resolve({}); } }; },
+      world: function () { return { get: function () { return Promise.resolve({}); }, mutate: function () { return Promise.resolve({}); } }; }
+    },
+    assets: {}
+  };
+  var handle = { stop: function () {}, pause: function () {}, resume: function () {}, setVolume: function () {}, sting: function () {}, setPreset: function () {}, setTempo: function () {}, state: function () { return 'playing'; } };
+
+  window.__tick = function (dt) {
+    now += dt;
+    for (var i = 0; i < frameCbs.length; i++) frameCbs[i](dt, now);
+  };
+  window.__pump = function (ms, step) {
+    step = step || 60;
+    for (var t = 0; t < ms; t += step) window.__tick(step);
+  };
+  window.__screen = function () {
+    var p = document.querySelector('.panel');
+    var h = document.querySelector('.hd');
+    return ((h ? h.textContent : '') + ' || ' + (p ? p.textContent : ''));
+  };
+  window.__click = function (act, v) {
+    var sel = '[data-act="' + act + '"]' + (v !== undefined ? '[data-v="' + v + '"]' : '');
+    var b = document.querySelector('.sheet:not(.hidden) ' + sel) || document.querySelector(sel);
+    if (!b) return false;
+    b.click();
+    return true;
+  };
+  window.__ctx = ctx;
+
+  var raf = function () { window.__tick(16); requestAnimationFrame(raf); };
+  window.__startRaf = function () { requestAnimationFrame(raf); };
+
+  var s = document.createElement('script');
+  s.src = (location.search.indexOf('build') >= 0) ? '../build/main.js' : '../main.js';
+  s.onload = function () {
+    window.plethoraBit.init(ctx).then(function () {
+      window.__ready = true;
+      if (!window.__manualTick) window.__startRaf();
+    }).catch(function (e) { window.__log.push(['initError', String(e)]); window.__initError = String(e); });
+  };
+  document.body.appendChild(s);
+})();
+</script>
+</body>
+</html>
