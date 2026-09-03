@@ -173,33 +173,38 @@
    * because the rig has no depth.
    * ------------------------------------------------------------------ */
 
-  var PICK = 'Squat down to the weights with a flat back and take one in each hand.';
-  var TALL = 'Stand up with your legs — never your lower back. Arms hanging, shoulders down and back.';
+  var TALL = 'Stand up with your legs, never your lower back. Arms hang straight, shoulders pulled down and back.';
 
+  /* gr is the phase at which the hands actually take the weight. Before it,
+   * the weight is drawn where it really is - on the floor. */
   var RIG = {
-    db2s: { sd: 9200, ss: ['0.34|' + PICK, '0.64|' + TALL],
+    db2s: { sd: 9600, gr: 0.34,
+      ss: ['0.34|The dumbbells start on the floor beside your feet. Squat down with a flat back and take one in each hand — neutral grip, palms facing your thighs.',
+        '0.64|' + TALL],
       st: tr('0|to2 na4 nb6 fa4 fb6',
         '0.34|y0.26 to42 ne-18 na14 nb18 fa14 fb18 nt54 ns-64 no84 ft56 fs-66 fo84',
         '0.64|to2 na4 nb6 fa4 fb6') },
-    db2f: { sd: 9200, ss: ['0.34|' + PICK, '0.64|' + TALL],
+    db2f: { sd: 9600, gr: 0.34,
+      ss: ['0.34|The dumbbells start on the floor beside your feet. Squat down with a flat back and take one in each hand — neutral grip, palms facing your thighs.',
+        '0.64|' + TALL],
       st: tr('0|to0 na4 nb6 fa-4 fb-6',
         '0.34|y0.30 to0 na14 nb18 fa-14 fb-18 nt50 ns-42 no90 ft-50 fs42 fo-90',
         '0.64|to0 na4 nb6 fa-4 fb-6') },
-    bars: { sd: 9600,
-      ss: ['0.34|Squat down to the bar with a flat back — never round over to pick it up.',
-        '0.64|Stand up by pushing the floor away. Finish tall, bar resting on your thighs.'],
+    bars: { sd: 10000, gr: 0.36,
+      ss: ['0.36|The bar is on the floor. Walk to it so it sits over your mid-foot, then squat down to it with a flat back — never round over and drag it up.',
+        '0.66|Underhand grip, hands about shoulder width — index fingers on the knurling rings. Stand up by pushing the floor away.'],
       st: tr('0|to2 na4 nb6 fa4 fb6',
-        '0.34|y0.26 to42 ne-18 na22 nb38 fa22 fb38 nt54 ns-64 no84 ft56 fs-66 fo84',
-        '0.64|to2 na2 nb4 fa2 fb4') },
-    gob: { sd: 9600,
-      ss: ['0.34|Stand the dumbbell on its end between your feet, feet just outside shoulder width, toes out about 20°.',
-        '0.64|Squat down to it — do not bend over to it — and cup both hands under the top head.'],
+        '0.36|y0.26 to42 ne-18 na22 nb38 fa22 fb38 nt54 ns-64 no84 ft56 fs-66 fo84',
+        '0.66|to2 na2 nb4 fa2 fb4') },
+    gob: { sd: 10000, gr: 0.62,
+      ss: ['0.30|Stand the dumbbell upright on the floor between your feet. Feet shoulder width or a touch wider, toes turned out 15–30°.',
+        '0.62|Squat down to it — hips back, chest up, flat back. Cup both hands under the TOP head, palms up, fingers interlaced beneath the plate.'],
       st: tr('0|to2 na4 nb6 fa4 fb6',
-        '0.34|to2 na4 nb6 fa4 fb6',
-        '0.64|y0.26 to38 ne-14 na56 nb10 fa56 fb10 nt54 ns-64 no84 ft56 fs-66 fo84') },
-    seat: { sd: 8600,
-      ss: ['0.34|Sit right back so your hips are in the corner of the seat and your back is supported.',
-        '0.64|Line the machine pivot up with your knee joint, then hold the handles lightly.'],
+        '0.30|to2 na4 nb6 fa4 fb6',
+        '0.62|y0.24 to36 ne-14 na46 nb26 fa46 fb26 nt58 ns-46 no84 ft60 fs-48 fo84') },
+    seat: { sd: 8600, gr: 0,
+      ss: ['0.34|Sit right back so your hips are in the corner of the seat and your whole back is on the pad.',
+        '0.64|Line the machine pivot up with the middle of your knee joint, then hold the handles lightly.'],
       st: tr('0|y0.235 to-4 na70 nb50 fa70 fb50 nt90 ns10 no86 ft90 fs8 fo86',
         '0.34|y0.235 to-6 na80 nb36 fa80 fb36 nt90 ns10 no86 ft90 fs8 fo86',
         '0.64|y0.235 to-6 na84 nb30 fa84 fb30 nt90 ns8 no86 ft90 fs6 fo86') }
@@ -210,34 +215,42 @@
   /* ---------------- Monday ---------------- */
 
   goblet: {
-    nm: 'Goblet Squat', tg: 'Quads · Glutes', vw: 'side', pr: 'goblet', rig: 'gob',
+    nm: 'Goblet Squat', tg: 'Quads · Glutes', vw: 'side', pr: 'goblet', rig: 'gob', al: 'knee',
     ld: '3 × 12–15 reps  ·  one dumbbell, 8–14 kg',
     rom: ['Down until your hip crease is just below the top of your kneecap',
-      'No deeper than you can hold a flat back',
-      'Up until hips and knees are straight, without leaning back'],
-    cu: ['Knees track out over your second and third toe, never inward',
-      'Weight over the middle of the foot, heels down the whole way',
-      'Elbows brush the inside of your knees at the bottom'],
-    sxs: ['1|Stand up with your legs. It rides against your chest, elbows tucked underneath it.'],
-    sxt: ['1|to4 na72 nb-58 fa72 fb-58 nt2 ns1 ft-3 fs4'],
-    tc: ['0.28|Break at the hips and knees together — sit straight down, not backwards.',
-      '0.58|Bottom: hip crease just below the top of the knee.',
-      '1|Drive up through the middle of your foot and squeeze the glutes.'],
-    tk: tr('0|to4 na72 nb-58 fa72 fb-58 nt2 ns1 ft-3 fs4',
-      '0.5|y0.20 to16 cu-3 na70 nb-52 fa70 fb-52 nt44 ns-52 no86 ft46 fs-54 fo86',
-      '1|to4 na72 nb-58 fa72 fb-58 nt2 ns1 ft-3 fs4')
+      'Elbows travel down the inside of your thighs and finish inside your knees',
+      'Up until hips and knees are straight — no leaning back at the top'],
+    cu: ['Hold it like a chalice: hands cupped UNDER the top plate, not gripping the handle',
+      'Elbows point straight down at the floor and stay tucked against your ribs',
+      'The dumbbell stays pressed to your sternum all set — let it drift away and you fold forward',
+      'Torso stays near vertical. This is the most upright squat you own',
+      'Shin only travels a little: the knee ends just past the toes, never dropping inward',
+      'Heels stay flat, weight through the mid-foot'],
+    sxs: ['1|Stand up and pull it in against your sternum. Elbows point straight down and stay tucked to your ribs.'],
+    sxt: ['1|to2 na10 nb140 fa10 fb140 nt2 ns1 ft-3 fs4'],
+    mk: ['0.62|knN|knee ≈ toe', '1|knN|mid-foot'],
+    tc: ['0.3|Sit straight down between your hips — chest tall, elbows pointing at the floor.',
+      '0.62|Bottom: hip crease just below the knee, elbows brushing the inside of the knees.',
+      '1|Drive through the middle of your foot and squeeze the glutes. Do not lean back.'],
+    tk: tr('0|to2 na10 nb140 fa10 fb140 nt2 ns1 ft-3 fs4',
+      '0.28|y0.08 to8 na10 nb140 fa10 fb140 nt45 ns-14 no86 ft47 fs-16 fo86',
+      '0.55|y0.19 to12 na10 nb138 fa10 fb138 nt74 ns-24 no86 ft76 fs-26 fo86',
+      '1|to2 na10 nb140 fa10 fb140 nt2 ns1 ft-3 fs4')
   },
 
   legext: {
-    nm: 'Leg Extension', tg: 'Quads', vw: 'side', pr: 'legext', rig: 'seat',
+    nm: 'Leg Extension', tg: 'Quads', vw: 'side', pr: 'legext', rig: 'seat', al: null,
     ld: '3 × 12–15 reps  ·  machine, light to moderate',
-    rom: ['Up until your knees are almost straight — stop short of locking, and hold one second',
-      'Down until your knees are bent past 90°, without the plates touching the stack'],
-    cu: ['Hips stay pinned to the seat — if they lift, go lighter',
+    rom: ['Up until the knee is almost straight — stop just short of locking, and hold one second',
+      'Down until the knee is bent past 90°, without the plates resting on the stack'],
+    cu: ['The pad sits on the bone just above the ankle — not on your foot, not up the shin',
+      'The machine pivot must line up with the middle of your knee, or the load goes to the joint',
+      'Hips stay pinned to the seat; if they lift to help, go lighter',
       'Toes pointed up and slightly toward you',
       'Three seconds down is worth more than an extra plate'],
-    sxs: ['1|Set the pad on the bone just above your ankle — not on your foot, not up the shin.'],
+    sxs: ['1|Set the pad on the bone just above your ankle. Hold the handles lightly — do not brace so hard your back arches.'],
     sxt: ['1|y0.235 to-6 na84 nb30 fa84 fb30 nt90 ns8 no86 ft90 fs6 fo86'],
+    mk: ['0.6|knN|near lock', '1|knN|past 90°'],
     tc: ['0.5|Straighten the knees smoothly — no kicking the weight up. Squeeze one second at the top.',
       '1|Lower slower than you lifted. The plates never clang back onto the stack.'],
     tk: tr('0|y0.235 to-6 na84 nb30 fa84 fb30 nt90 ns8 no86 ft90 fs6 fo86',
@@ -246,16 +259,19 @@
   },
 
   lunge: {
-    nm: 'Walking Lunges', tg: 'Quads · Glutes', vw: 'side', pr: 'db2', rig: 'db2s',
+    nm: 'Walking Lunges', tg: 'Quads · Glutes', vw: 'side', pr: 'db2', rig: 'db2s', al: 'knee',
     ld: '3 × 12–15 reps per leg  ·  bodyweight or 2 × 5–10 kg',
     rom: ['Down until BOTH knees read about 90°',
       'The back knee stops about 2 cm off the floor — it touches nothing',
-      'Front shin vertical, knee over the laces and no further forward'],
-    cu: ['Torso upright and stacked over your hips',
-      'Step in a straight line, feet about hip width — never on a tightrope',
-      'If you wobble, lengthen the step before you add weight'],
-    sxs: ['1|Brace your stomach, then step long — long enough that both knees can reach 90°.'],
+      'Front shin stays vertical: the knee finishes over the laces, no further forward'],
+    cu: ['Neutral grip, arms hanging dead straight — the dumbbells are ballast, not part of the movement',
+      'Torso upright and stacked over your hips the whole rep',
+      'Step long enough that both knees can reach 90°; a short step throws the knee past the toes',
+      'Feet land about hip width apart, never on a tightrope',
+      'Drop straight down — the back knee travels to the floor, it does not push you forward'],
+    sxs: ['1|Stand tall, shoulders back. Take a long step — long enough that both knees can reach 90°.'],
     sxt: ['1|y0.13 to5 na2 nb3 fa2 fb3 nt62 ns-8 no84 ft-14 fs-92 fo-16'],
+    mk: ['0.6|knN|90°', '1|knN|heel drive'],
     tc: ['0.5|Drop straight down. The back knee travels to the floor, it does not push you forward.',
       '1|Push through the front heel to stand, then step straight into the next one.'],
     tk: tr('0|to3 na2 nb3 fa2 fb3 nt2 ns1 ft-3 fs3',
@@ -265,15 +281,18 @@
   },
 
   calf: {
-    nm: 'Calf Raises', tg: 'Calves', vw: 'side', pr: 'step', rig: 'db2s',
+    nm: 'Calf Raises', tg: 'Calves', vw: 'side', pr: 'step', rig: 'db2s', al: null,
     ld: '3 × 12–15 reps  ·  bodyweight, or hold 2 dumbbells',
     rom: ['Up onto the balls of your feet, heels as high as your ankles allow, held one second',
       'Down until the heels drop below the step and the calf stretches'],
-    cu: ['Knees stay straight — bending them makes it a different exercise',
-      'Rise through the big toe, not out over the little toe',
+    cu: ['Balls of the feet on the step, heels hanging completely free off the back',
+      'Knees stay straight — bending them makes it a different exercise',
+      'Rise straight up through the big toe, not out over the little toe',
+      'Hold something at chest height for balance only; never pull yourself up with it',
       'No bouncing: bouncing loads the tendon, not the muscle'],
-    sxs: ['1|Balls of both feet on a step, heels hanging free. Let them sink until the calf stretches.'],
+    sxs: ['1|Balls of both feet on the step, heels hanging free. Let the heels sink until the calf stretches.'],
     sxt: ['1|y0.065 to2 na3 nb4 fa3 fb4 nt2 ns2 no120 ft-2 fs2 fo120'],
+    mk: ['0.5|anN|full height', '1|anN|heel below'],
     tc: ['0.5|Press through the big toe and rise as high as your ankles allow. Hold one second.',
       '1|Lower under control until the heels are below the step.'],
     tk: tr('0|y0.065 to2 na3 nb4 fa3 fb4 nt2 ns2 no120 ft-2 fs2 fo120',
@@ -282,53 +301,68 @@
   },
 
   ohp: {
-    nm: 'Dumbbell Shoulder Press', tg: 'Shoulders', vw: 'front', pr: 'db2', rig: 'db2f',
+    nm: 'Dumbbell Shoulder Press', tg: 'Shoulders', vw: 'front', pr: 'db2', rig: 'db2f', al: null,
     ld: '3 × 12–15 reps  ·  2 dumbbells, 5–10 kg each',
-    rom: ['Up until your arms are straight, biceps beside your ears, dumbbells almost touching',
-      'Down until your elbows are level with your shoulders and your hands are at ear height — no lower'],
-    cu: ['Ribs pulled down — arching the back turns this into a bench press',
-      'Wrists straight and stacked over the elbows',
-      'Feet planted; do not push the floor away to help the weight up'],
-    sxs: ['1|Bring them to ear height, palms forward, elbows just in front of you — not flared out.'],
-    sxt: ['1|to0 na96 nb172 fa-96 fb-172'],
-    tc: ['0.5|Press up and slightly in, until the arms are straight and the dumbbells nearly touch.',
-      '1|Lower under control until the elbows come back level with the shoulders.'],
-    tk: tr('0|to0 na96 nb172 fa-96 fb-172 nt3 ns-2 ft-3 fs2',
-      '0.5|to0 na152 nb176 fa-152 fb-176 nt3 ns-2 ft-3 fs2',
-      '1|to0 na96 nb172 fa-96 fb-172 nt3 ns-2 ft-3 fs2')
+    rom: ['Start with the elbow at 90° and the forearm dead vertical, hands at ear height',
+      'Down only to shoulder height — the elbow never drops below the shoulder line',
+      'Up until the arms are straight, biceps beside your ears, dumbbells almost touching'],
+    cu: ['Forearms stay vertical the whole rep — wrist stacked directly over the elbow, never behind it',
+      'Elbows sit just in front of your chest, about 30° forward, not flared flat out to the sides',
+      'Ribs pulled down. Arching the lower back turns this into an incline press',
+      'Press up and slightly in, so the dumbbells converge at the top',
+      'Feet planted; no dipping the knees to help the weight up'],
+    sxs: ['1|Bring them to ear height, palms forward. Elbow at 90°, forearm vertical, elbows just in front of your chest.'],
+    sxt: ['1|to0 na92 nb178 fa-92 fb-178'],
+    mk: ['0.25|elN|90°', '0.7|elN|locked out', '1|elN|back to 90°'],
+    tc: ['0.5|Press up and slightly in until the arms are straight and the dumbbells nearly touch.',
+      '1|Lower under control until the elbow is back to 90° and level with your shoulder — no lower.'],
+    tk: tr('0|to0 na92 nb178 fa-92 fb-178 nt3 ns-2 ft-3 fs2',
+      '0.5|to0 na168 nb176 fa-168 fb-176 nt3 ns-2 ft-3 fs2',
+      '1|to0 na92 nb178 fa-92 fb-178 nt3 ns-2 ft-3 fs2')
   },
 
   lateral: {
-    nm: 'Lateral Raises', tg: 'Side delts', vw: 'front', pr: 'db2', rig: 'db2f',
+    nm: 'Lateral Raises', tg: 'Side delts', vw: 'front', pr: 'db2', rig: 'db2f', al: null, dbo: 'end',
     ld: '3 × 12–15 reps  ·  2 dumbbells, 2.5–6 kg each',
     rom: ['Up until your hands are level with your shoulders — never higher',
-      'Down until the dumbbells are about 5 cm from your thighs — do not rest them on you'],
-    cu: ['Shoulders stay pressed down; do not shrug the weight up',
-      'Lead with the elbows, as if pouring water from two jugs',
-      'No swinging. If you need momentum, go lighter'],
-    sxs: ['1|Lean forward the smallest amount and set a soft bend in each elbow. Keep that bend all set.'],
+      'The elbow finishes a shade higher than the wrist',
+      'Down until the dumbbells are about 5 cm from your thighs — never rest them on you'],
+    cu: ['Neutral grip: the two dumbbells stay PARALLEL to each other, like a pair of rails',
+      'Soft 10–20° bend in each elbow, set before the first rep and never changed',
+      'Lead with the elbow, not the hand — the hand is just along for the ride',
+      'Shoulders stay pressed down; do not shrug the weight up to your ears',
+      'Lean forward a few degrees so the weights clear your thighs',
+      'No swinging at the hips. If you need momentum, the dumbbells are too heavy'],
+    sxs: ['1|Turn your palms to face each other so the dumbbells sit parallel. Set a soft bend in each elbow and keep exactly that bend.'],
     sxt: ['1|to3 na8 nb14 fa-8 fb-14'],
+    mk: ['0.25|elN|soft bend', '0.75|elN|elbow high', '1|elN|soft bend'],
     tc: ['0.5|Lead with the elbows and lift out to the side, stopping level with the shoulders.',
       '1|Lower slowly and resist the whole way down. This half builds the muscle.'],
-    tk: tr('0|to2 na8 nb12 fa-8 fb-12 nt3 ns-2 ft-3 fs2',
-      '0.5|to2 na84 nb92 fa-84 fb-92 nt3 ns-2 ft-3 fs2',
-      '1|to2 na8 nb12 fa-8 fb-12 nt3 ns-2 ft-3 fs2')
+    tk: tr('0|to2 na8 nb14 fa-8 fb-14 nt3 ns-2 ft-3 fs2',
+      '0.5|to2 na85 nb80 fa-85 fb-80 nt3 ns-2 ft-3 fs2',
+      '1|to2 na8 nb14 fa-8 fb-14 nt3 ns-2 ft-3 fs2')
   },
 
   bbcurl: {
-    nm: 'Barbell Bicep Curl', tg: 'Biceps', vw: 'side', pr: 'bar', rig: 'bars',
+    nm: 'Barbell Bicep Curl', tg: 'Biceps', vw: 'side', pr: 'bar', rig: 'bars', al: 'elbow',
     ld: '3 × 12–15 reps  ·  barbell or EZ bar, 10–20 kg total',
     rom: ['Up until the bar reaches the top of your chest',
-      'Down until your arms are completely straight, every single rep'],
-    cu: ['Elbows glued to your sides — if they drift forward the delts take over',
-      'No swinging at the hips; the torso is a post',
-      'Wrists neutral and firm, never rolling back'],
-    sxs: ['1|Underhand grip about shoulder width, thumbs wrapped, elbows pinned to your ribs.'],
+      'Through 90° the upper arm must still be vertical — if the elbow has drifted forward, the weight is too heavy',
+      'Down until the arms are completely straight, every single rep'],
+    cu: ['Grip underhand, hands about shoulder width — index fingers on the knurling rings',
+      'Elbows pinned to your ribs and the upper arm dead vertical: only the forearm moves',
+      'The elbow is a hinge, not a lever — it does not travel forward as you curl',
+      'Wrists stay straight and firm, never rolling back under the bar',
+      'Torso is a post: no swinging at the hips, no rocking back to start the rep',
+      'Lower under control. Dropping the bar wastes the better half of the rep'],
+    sxs: ['1|Stand tall, bar resting on your thighs. Elbows pinned to your ribs, upper arms vertical.'],
     sxt: ['1|to2 na2 nb4 fa2 fb4 nt2 ns1 ft-2 fs2'],
-    tc: ['0.5|Curl by bending only at the elbow. The bar finishes at the top of your chest.',
+    mk: ['0.3|elN|90°', '0.62|elN|to chest', '1|elN|straight'],
+    tc: ['0.3|Curl by bending only at the elbow. Upper arm stays vertical.',
+      '0.62|Top: bar at the top of your chest, wrists still straight.',
       '1|Lower all the way until the arms are completely straight.'],
     tk: tr('0|to2 na2 nb4 fa2 fb4 nt2 ns1 ft-2 fs2',
-      '0.5|to2 na-4 nb148 fa-4 fb148 nt2 ns1 ft-2 fs2',
+      '0.55|to2 na-2 nb164 fa-2 fb164 nt2 ns1 ft-2 fs2',
       '1|to2 na2 nb4 fa2 fb4 nt2 ns1 ft-2 fs2')
   },
 
@@ -390,6 +424,7 @@
     _e.id = _k;
     if (!_r) continue;
     _e.sd = _r.sd;
+    _e.gr = _r.gr;
     _e.ss = _r.ss.concat(_e.sxs || []);
     _e.st = _r.st.concat(tr.apply(null, _e.sxt || []));
   }
@@ -691,17 +726,36 @@
     g.strokeStyle = C.steelDark; g.stroke();
   }
 
-  function dumbbell(g, c, S, big) {
+  /* endOn: the handle points at the viewer, so the bell foreshortens to a
+   * disc. That is what a neutral grip looks like from the front - the two
+   * dumbbells sit parallel, like rails, not broadside. */
+  function dumbbell(g, c, S, big, endOn) {
     var w = S * (big ? 0.10 : 0.085), r = S * (big ? 0.030 : 0.025);
     g.strokeStyle = C.steel;
     g.lineWidth = Math.max(2, S * 0.013);
     g.lineCap = 'round';
-    g.beginPath(); g.moveTo(c.x - w * 0.5, c.y); g.lineTo(c.x + w * 0.5, c.y); g.stroke();
     g.fillStyle = '#2b3363';
+    if (endOn) {
+      g.beginPath(); g.arc(c.x, c.y, r * 1.25, 0, Math.PI * 2); g.fill(); g.stroke();
+      g.beginPath(); g.arc(c.x, c.y, r * 0.45, 0, Math.PI * 2); g.stroke();
+      return;
+    }
+    g.beginPath(); g.moveTo(c.x - w * 0.5, c.y); g.lineTo(c.x + w * 0.5, c.y); g.stroke();
     for (var d = -1; d <= 1; d += 2) {
       g.beginPath(); g.arc(c.x + d * w * 0.5, c.y, r, 0, Math.PI * 2);
       g.fill(); g.stroke();
     }
+  }
+
+  /* A dumbbell stood on its end, gripped by the top plate. */
+  function goblet(g, c, S) {
+    var r = S * 0.055, h = S * 0.055;
+    g.strokeStyle = C.steel;
+    g.lineWidth = Math.max(2, S * 0.014);
+    g.fillStyle = '#2b3363';
+    g.beginPath(); g.moveTo(c.x, c.y - h); g.lineTo(c.x, c.y + h); g.stroke();
+    g.beginPath(); g.ellipse(c.x, c.y - h, r, r * 0.42, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.beginPath(); g.ellipse(c.x, c.y + h, r, r * 0.42, 0, 0, Math.PI * 2); g.fill(); g.stroke();
   }
 
 
@@ -732,24 +786,37 @@
 
   function mid(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
 
-  function drawProps(g, ex, P, S, view, mir) {
+  function drawProps(g, ex, P, S, view, mir, reel, phase) {
     var pr = ex.pr, nw = P.nearArm.wrist, fw = P.farArm.wrist, c = mid(nw, fw);
     var na = P.nearLeg.ankle, fa = P.farLeg.ankle, pv = P.pelvis;
+
+    /* Before the hands take the weight it is still on the floor. Drawing it
+     * in her fists the whole way through made her look like she was holding
+     * a barbell while walking up to it and then squatting down with it. */
+    var held = !(reel === 'setup' && ex.gr && phase < ex.gr);
+    if (!held) {
+      var fy = Math.max(P.nearLeg.toe.y, P.farLeg.toe.y);
+      var fx = (P.nearLeg.toe.x + P.farLeg.toe.x) / 2;
+      if (pr === 'bar') {
+        bar(g, { x: fx + S * 0.10, y: fy - S * 0.02 }, S, 0.19);
+      } else if (pr === 'goblet') {
+        goblet(g, { x: fx + S * 0.06, y: fy - S * 0.055 }, S);
+      } else if (pr === 'db2' || pr === 'step') {
+        dumbbell(g, { x: fx - S * 0.14, y: fy - S * 0.02 }, S, false, ex.dbo === 'end');
+        dumbbell(g, { x: fx + S * 0.16, y: fy - S * 0.02 }, S, false, ex.dbo === 'end');
+      }
+      if (pr !== 'step') return;
+    }
 
     if (pr === 'bar') {
       bar(g, nw, S, 0.19);
     } else if (pr === 'db2') {
-      dumbbell(g, nw, S, false);
-      dumbbell(g, fw, S, false);
+      dumbbell(g, nw, S, false, ex.dbo === 'end');
+      dumbbell(g, fw, S, false, ex.dbo === 'end');
     } else if (pr === 'db1') {
       dumbbell(g, nw, S, true);
     } else if (pr === 'goblet') {
-      /* one dumbbell stood on its end, cupped against the chest */
-      g.strokeStyle = C.steel;
-      g.lineWidth = Math.max(3, S * 0.016);
-      g.beginPath(); g.arc(c.x, c.y - S * 0.05, S * 0.045, Math.PI, Math.PI * 2); g.stroke();
-      g.beginPath(); g.arc(c.x, c.y + S * 0.02, S * 0.062, 0, Math.PI * 2);
-      g.fillStyle = '#232a55'; g.fill(); g.stroke();
+      goblet(g, c, S);
     } else if (pr === 'box') {
       /* a knee-high bench standing behind her, wherever the back foot is */
       var bx = fa.x - S * 0.30, by = fa.y - S * 0.06;
@@ -807,8 +874,7 @@
       var tx = Math.min(P.nearLeg.toe.x, P.farLeg.toe.x) - S * 0.05;
       var ty = Math.max(P.nearLeg.toe.y, P.farLeg.toe.y) - S * 0.005;
       pad(g, tx, ty, S * 0.24, S * 0.055, S);
-      dumbbell(g, nw, S, false);
-      dumbbell(g, fw, S, false);
+      if (held) { dumbbell(g, nw, S, false); dumbbell(g, fw, S, false); }
     } else if (pr === 'dip') {
       g.strokeStyle = C.steel;
       g.lineWidth = Math.max(3, S * 0.017);
@@ -839,9 +905,72 @@
     g.restore();
   }
 
-  function drawAnnotation(g, ex, P, S) {
+  /* parent, vertex, child for each joint a marker can point at */
+  var JOINT = {
+    elN: ['nearArm', 'shoulder', 'elbow', 'wrist'],
+    elF: ['farArm', 'shoulder', 'elbow', 'wrist'],
+    knN: ['nearLeg', 'hip', 'knee', 'ankle'],
+    knF: ['farLeg', 'hip', 'knee', 'ankle'],
+    anN: ['nearLeg', 'knee', 'ankle', 'toe'],
+    anF: ['farLeg', 'knee', 'ankle', 'toe']
+  };
+
+  function angleMark(g, P, key, label, S, bx) {
+    var j = JOINT[key];
+    if (!j) return;
+    var limb = P[j[0]];
+    var a = limb[j[1]], b = limb[j[2]], c = limb[j[3]];
+    var a1 = Math.atan2(a.y - b.y, a.x - b.x);
+    var a2 = Math.atan2(c.y - b.y, c.x - b.x);
+    var d = a2 - a1;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    var r = S * 0.09;
+    g.save();
+    g.strokeStyle = C.glow;
+    g.lineWidth = Math.max(2, S * 0.015);
+    g.beginPath(); g.arc(b.x, b.y, r, a1, a1 + d, d < 0); g.stroke();
+    g.beginPath(); g.arc(b.x, b.y, S * 0.018, 0, Math.PI * 2);
+    g.fillStyle = C.glow; g.fill();
+
+    if (label) {
+      var m = a1 + d / 2;
+      var lx = b.x + Math.cos(m) * r * 2.2, ly = b.y + Math.sin(m) * r * 2.2;
+      var fs = Math.max(9, Math.min(13, S * 0.075));
+      g.font = '700 ' + fs + 'px ' + FONT_UI;
+      var tw = g.measureText(label).width;
+      var bw = tw + fs * 1.1, bh = fs * 1.7;
+      if (bx) {
+        lx = Math.min(Math.max(lx, bx.x + bw / 2 + 3), bx.x + bx.w - bw / 2 - 3);
+        ly = Math.min(Math.max(ly, bx.y + bh / 2 + 3), bx.y + bx.h - bh / 2 - 3);
+      }
+      g.beginPath();
+      g.moveTo(lx - bw / 2 + bh / 2, ly - bh / 2);
+      g.arcTo(lx + bw / 2, ly - bh / 2, lx + bw / 2, ly + bh / 2, bh / 2);
+      g.arcTo(lx + bw / 2, ly + bh / 2, lx - bw / 2, ly + bh / 2, bh / 2);
+      g.arcTo(lx - bw / 2, ly + bh / 2, lx - bw / 2, ly - bh / 2, bh / 2);
+      g.arcTo(lx - bw / 2, ly - bh / 2, lx + bw / 2, ly - bh / 2, bh / 2);
+      g.closePath();
+      g.fillStyle = C.glow; g.fill();
+      g.fillStyle = '#052027';
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(label, lx, ly + 0.5);
+    }
+    g.restore();
+  }
+
+  function drawAnnotation(g, ex, P, S, reel, phase, bx) {
     var col = 'rgba(61,220,132,0.85)';
     var k = ex.al;
+    var marks = reel === 'setup' ? ex.mks : ex.mk;
+    if (marks && marks.length) {
+      var pick = marks[marks.length - 1];
+      for (var i = 0; i < marks.length; i++) {
+        if (phase <= parseFloat(marks[i])) { pick = marks[i]; break; }
+      }
+      var parts = pick.split('|');
+      angleMark(g, P, parts[1], parts[2], S, bx);
+    }
     if (!k) return;
     if (k === 'plank') {
       dash(g, [P.nearArm.shoulder, P.pelvis, P.farLeg.ankle], col, S);
@@ -1013,8 +1142,8 @@
       ox: ox, oy: oy, S: S, mir: mir, timeMs: timeMs,
       tone: { legs: C.legs, skin: C.skin, top: C.top, topLit: C.topLit, hair: C.hair, shoe: C.shoe }
     });
-    if (ex && ex.pr) drawProps(g, ex, P, S, view, mir);
-    if (ex && (!opts || opts.annotate !== false)) drawAnnotation(g, ex, P, S);
+    if (ex && ex.pr) drawProps(g, ex, P, S, view, mir, variant, phase);
+    if (ex && (!opts || opts.annotate !== false)) drawAnnotation(g, ex, P, S, variant, phase, { x: x, y: y, w: w, h: h });
     g.restore();
     return S;
   }
