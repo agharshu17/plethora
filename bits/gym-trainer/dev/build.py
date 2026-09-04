@@ -34,6 +34,11 @@ SIZE, measured against the live endpoint on 2026-09-04:
 
 Measure BYTES, not characters: the coaching text is full of multi-byte UTF-8.
 
+The full measurements, the probe ladder for re-measuring without writing to
+the account, and the compression playbook are in
+.claude/skills/plethora-bit/reference/size-and-upload-limits.md at the repo
+root.
+
     python3 dev/build.py        # writes build/main.js
     node dev/verify.mjs         # prove the artifact still is the same Bit
 """

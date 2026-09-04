@@ -60,10 +60,11 @@ whitespace rule that quietly ate a token cannot ship. `node --check` would not
 catch it, and screenshots cannot either, because the animation is time-driven.
 
 The size that matters is **not** the 2 MiB package limit but a ~3 second
-upload deadline, and it moves with what the manifest declares. See the note at
-the top of `dev/build.py` for the measurements, and the **`plethora-bit`**
-skill at the repo root for the pairing flow, the upload call, and how to tell
-the failure modes apart.
+upload deadline, and it moves with what the manifest declares — this Bit
+uploads at 77 KB and does not at 78 KB. The full measurements, the probe ladder
+for re-measuring safely, and the compression playbook are in
+`.claude/skills/plethora-bit/reference/size-and-upload-limits.md`; the
+**`plethora-bit`** skill covers pairing and the upload call.
 
 ## The rig
 

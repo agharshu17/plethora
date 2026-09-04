@@ -28,6 +28,11 @@ font names — if it is not in those documents, it does not exist.
 This directory caches a dated copy in `reference/` purely so you can diff
 against it and notice what changed. It is a snapshot, not the contract.
 
+`reference/size-and-upload-limits.md` is different in kind: it is not a copy of
+anything the platform publishes, but a record of what was **measured** against
+the live endpoint — where uploads actually start failing, why the documented
+limit is not the one that bites, and how to re-measure safely.
+
 ## Connecting: pairing, once, with the creator
 
 Uploading needs an agent access token. You get one by pairing, which the
@@ -85,54 +90,35 @@ code loads things from. Causes seen in practice:
   font that is not an exact `fontRegistry` entry.
 
 **"Request deadline exceeded"** (HTTP 504, `retryable: true`) is an upload
-deadline, and it is the constraint that actually bites — not the 2 MiB package
-limit, which nothing realistic approaches. Measured against the live endpoint:
+deadline, and it — not the 2 MiB package limit — is what actually stops a Bit
+shipping. **Read `reference/size-and-upload-limits.md` before you change a
+single line to make something smaller.** The headlines:
 
-- The server gives the upload roughly **3 seconds** and then gives up. Every
-  failure came back in 2.9–3.7 s, so it is a fixed budget, not slow progress.
-- **The boundary moves with what the manifest declares.** With a manifest
-  carrying permissions and memory channels, synthetic payloads of 40/60/70/76 KB
-  all uploaded in under 3 s while a real 78–81 KB Bit failed ~20 attempts in a
-  row. With a bare manifest the boundary sat nearer 80–85 KB. Budget for about
-  **76 KB of source**, and re-measure rather than trusting that number.
-- It is **probabilistic right at the line**: 82 KB failed, 85 KB passed, 86 KB
-  failed. The 77 KB artifact that finally landed took three attempts. Retry
-  several times before concluding anything.
+- The server gives the upload about **3 seconds**. Successes land in 1.9–2.9 s,
+  deadline failures come back in 2.7–3.7 s, and every other error answers in
+  under 1.5 s. **The response time tells you which layer failed.**
+- **The boundary moves with what the manifest declares.** With permissions and
+  memory channels, 76 KB of source uploaded and 78 KB did not; with a bare
+  manifest the line sat nearer 80–85 KB. Budget ~76 KB and re-measure.
+- It is **probabilistic at the line** — 82 KB failed, 85 KB passed, 86 KB
+  failed. The artifact that finally shipped took three attempts. Retry.
+- The 2 MiB limit is real and irrelevant: a Bit failing at 78 KB is using
+  under 4% of it.
 
-**Diagnose it before you optimise, because every layer fails differently.**
-These probes cost nothing and cannot write to the account, because each one is
-guaranteed to be rejected:
+**Diagnose before you optimise, using probes that cannot write to the account**
+because each is guaranteed to be rejected. `-d '{}'` → `400 source is required`
+proves the token. A large source that never assigns `window.plethoraBit` →
+fast `400`, proving the gateway takes a body that size. One that does assign it
+but carries a CDN URL → fast `400 unsupported remote resources`, proving the
+deep analyser is not what times out. Append a URL to your **real** source: a
+fast 400 means your source analyses fine and the deadline is in persistence.
+Only then bisect with valid payloads, under a throwaway title.
 
-- `-d '{}'` → `400 source is required` proves the token works. A bad token
-  gives 401/403 instead.
-- A large source that never assigns `window.plethoraBit` → fast `400`. Proves
-  the gateway accepts a body that size.
-- A large source that *does* assign it but contains a public CDN URL → fast
-  `400 unsupported remote resources`. This one reaches the **deep analyser**,
-  so a fast reply proves analysis is not what is timing out.
-- Append a URL to your **real** source. If that returns a fast 400, your source
-  analyses fine and the deadline is in persistence, i.e. size.
-
-Then bisect with synthetic-but-valid payloads under a **throwaway title** so a
-success cannot overwrite the real draft. Reuse one throwaway title so probes
-update it rather than littering the account.
-
-**When you must get smaller, compress data, never identifiers.** Minifying is
-what gets a Bit rejected outright. What works: strip comments and indentation,
-squeeze whitespace outside string literals, join lines only where automatic
-semicolon insertion cannot apply (after `,` `;` `{` `+` — never after `)` or
-`}`), and replace repeated phrases in string literals with short placeholders
-expanded by a tiny function at load. Coaching prose, CSS and keyframe data all
-compress heavily this way; 118 KB of readable source became a 77 KB artifact
-with every literal still present, once, in the phrase table.
-
-Two things make that safe. Give the placeholder an **atomic representation
-while compressing** (one private-use character, mapped to its two-byte form
-only at emission) or a later phrase will match half of an earlier placeholder
-and put a stray marker in the artifact. And keep a **verifier that runs both
-files and compares the data structures they build** — `node --check` will not
-notice a regex that ate a token, and a screenshot diff is useless because
-animation is time-dependent.
+**If you must shrink, compress data, never identifiers** — minifying is what
+gets a Bit rejected outright. A phrase dictionary over prose, keyframes and
+CSS, plus whitespace squeezing and safe line joining, took this Bit from a
+95 KB artifact to 77 KB with nothing removed. The full playbook, with measured
+yields and the two mistakes that will bite you, is in the reference note.
 
 ## Writing the Bit
 
