@@ -58,12 +58,17 @@ of them had first been guessed wrong:
 2. **No URLs anywhere in the source**, not even inside a comment. A GitHub
    link in a build banner was enough to trip the same error. `dev/build.py`
    fails the build if it finds one.
-3. **The size ceiling is about 92 KB for this code, not the 80 KB once
-   assumed, and not the 100 KB a padded probe suggested.** Measured:
-   92.6 KB uploads first try, 93.5 KB needs retries, 95.9 KB and above always
-   times out with *"Request deadline exceeded"*. A padded 100 KB probe of
-   trivial statements passed, so the budget is not purely bytes — real code
-   with many string literals costs the validator more.
+3. **The size ceiling is about 93 KB for this code, not the 80 KB once
+   assumed, and not the 100 KB a padded probe suggested.** Measured in
+   **bytes**: ~93.0 KB uploads on the first try, ~93.9 KB needs retries,
+   ~96.3 KB and above always times out with *"Request deadline exceeded"*.
+   A padded 100 KB probe of trivial statements passed, so the budget is not
+   purely size — real code with many string literals costs the validator more.
+
+   Measure bytes, not characters. The coaching text is full of multi-byte
+   UTF-8 (`×`, `·`, `°`, `—`), so Python's `len()` on decoded text understates
+   the payload by ~380 bytes — enough to read as "under the ceiling" while
+   actually sitting on top of it. `dev/build.py` encodes before measuring.
 4. **Uploads are flaky near the ceiling.** Even a passing size often fails
    once or twice before succeeding, so always retry before concluding
    anything about size.

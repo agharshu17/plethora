@@ -10,9 +10,11 @@ DO NOT MINIFY. Measured against the live draft endpoint:
     "This bit uses unsupported remote resources" error. The identical code
     unminified is accepted. The validator statically analyses the source, and
     mangling defeats it.
-  * The size ceiling is NOT ~80 KB. A padded 100 KB source was accepted, as
-    was 73.9 KB of real source. Around 160 KB the request fails with
-    "Request deadline exceeded", which is a server timeout, not validation.
+  * The size ceiling is NOT ~80 KB. Measured in BYTES: ~93.0 KB uploads on
+    the first try, ~93.9 KB needs retries, ~96.3 KB and up always fails with
+    "Request deadline exceeded" - a server timeout, not validation. A padded
+    100 KB probe of trivial statements passed, so the budget is not purely
+    size; real code with many string literals costs the validator more.
   * No URLs anywhere in the source, not even in a comment. A GitHub link in a
     build banner was enough to trip the same remote-resources error.
 
@@ -32,8 +34,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'main.js')
 OUT_DIR = os.path.join(ROOT, 'build')
 OUT = os.path.join(OUT_DIR, 'main.js')
-LIMIT = 92000    # measured: 92.6 KB uploads first try, 93.5 KB needs
-                 # retries, 95.9 KB and up always times out. See the note above.
+LIMIT = 92500    # measured in BYTES: ~93.0 KB uploads first try, ~93.9 KB
+                 # needs retries, ~96.3 KB and up always times out.
 
 
 def _segments(src):
@@ -147,11 +149,17 @@ def main():
         raise SystemExit('found %d URL(s) in the artifact — the validator will '
                          'reject it as a remote resource' % len(urls))
 
-    print('main.js        %6d bytes' % len(src))
+    # Measure BYTES, not characters. The coaching text carries multi-byte
+    # UTF-8 (the multiplication sign, middot, degree, em dash), so len() on
+    # decoded text understates the real payload by several hundred bytes -
+    # the difference between comfortably under the ceiling and sitting on it.
+    src_b = len(src.encode('utf-8'))
+    built_b = len(built.encode('utf-8'))
+    print('main.js        %6d bytes' % src_b)
     print('build/main.js  %6d bytes  (%.0f%% of source)'
-          % (len(built), 100.0 * len(built) / len(src)))
-    print('headroom       %6d bytes under the %d ceiling' % (LIMIT - len(built), LIMIT))
-    if len(built) > LIMIT:
+          % (built_b, 100.0 * built_b / src_b))
+    print('headroom       %6d bytes under the %d ceiling' % (LIMIT - built_b, LIMIT))
+    if built_b > LIMIT:
         print('WARNING: over budget — the draft upload may time out.')
 
 
