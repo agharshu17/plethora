@@ -107,11 +107,47 @@
     shoulderLift: 0
   };
 
+  /* ---------------- phrase dictionary ---------------- *
+   * The coaching text is the biggest thing in this file and it repeats
+   * itself - "shoulder", "until the", "your" - because good cues do. The
+   * build may replace those runs with a '~' placeholder and fill _A/_P with
+   * what they stand for; here they are empty and _x is the identity. No
+   * placeholder ever contains a quote, a backslash or the '|' that separates
+   * a timestamp from its text, so expanding is safe at any point.
+   * ------------------------------------------------------------------ */
+
+  var _A = '', _P = [];
+
+  function _x(s) {
+    if (!_P.length) return s;
+    var out = '', i = 0, j, c;
+    while (i < s.length) {
+      c = s.charAt(i);
+      /* two marker characters, so the table can hold more phrases than the
+       * placeholder alphabet has room for on its own */
+      if ((c === '~' || c === '`') && (j = _A.indexOf(s.charAt(i + 1))) >= 0) {
+        out += _P[c === '~' ? j : j + _A.length]; i += 2;
+      } else { out += c; i += 1; }
+    }
+    return out;
+  }
+
+  /* Poses are consumed while the library is still being built, so they are
+   * expanded in q(); everything else is walked once afterwards. */
+  function _walk(o) {
+    for (var k in o) {
+      if (!o.hasOwnProperty(k)) continue;
+      if (typeof o[k] === 'string') o[k] = _x(o[k]);
+      else if (o[k] && typeof o[k] === 'object') _walk(o[k]);
+    }
+  }
+
   var POSE_KEYS = Object.keys(REST);
   var TOKEN = /^([a-z]+)(-?[0-9.]+)$/;
 
   function q(s) {
     var p = {}, i;
+    s = _x(s);
     for (i = 0; i < POSE_KEYS.length; i++) p[POSE_KEYS[i]] = REST[POSE_KEYS[i]];
     if (!s) return p;
     var parts = s.split(' ');
@@ -321,7 +357,7 @@
       'Elbows point straight down at the floor and stay tucked against your ribs',
       'The dumbbell stays pressed to your sternum all set — let it drift away and you fold forward'],
     sxs: ['1|Stand up and pull it in against your sternum. Elbows point straight down and stay tucked to your ribs.'],
-    sxt: ['1|to2 na10 nb140 fa10 fb140 nt2 ns1 ft-3 fs4'],
+    sxt: ['1|=T'],
     mk: ['0.62|knN|knees track over the toes',
       '1|knN|drive the mid-foot'],
     tc: ['0.3|Sit straight down between your hips — chest tall, elbows pointing at the floor.',
@@ -342,7 +378,7 @@
       'The machine pivot must line up with the middle of your knee, or the load goes to the joint',
       'Hips stay pinned to the seat; if they lift to help, go lighter'],
     sxs: ['1|Set the pad on the bone just above your ankle. Hold the handles lightly — do not brace so hard your back arches.'],
-    sxt: ['1|y0.235 to-6 na84 nb30 fa84 fb30 nt90 ns8 no86 ft90 fs6 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.6|knN|near lock',
       '1|knN|past 90°'],
     tc: ['0.5|Straighten the knees smoothly — no kicking the weight up. Squeeze one second at the top.',
@@ -361,7 +397,7 @@
       'Front knee tracks over the middle of the foot — never let it fall inward as you stand up',
       'Step long enough that both knees can reach 90°; a short step throws the knee past the toes'],
     sxs: ['1|Stand tall, shoulders back, ribs down. The step you are about to take has to be long enough that BOTH knees can reach 90°.'],
-    sxt: ['1|to3 na2 nb3 fa2 fb3 nt2 ns1 ft-3 fs3'],
+    sxt: ['1|=T'],
     mk: ['0.6|knN|90°',
       '1|knN|heel drive'],
     tc: ['0.5|Drop straight down. The back knee travels to the floor, it does not push you forward.',
@@ -381,7 +417,7 @@
       'Knees stay straight — bending them makes it a different exercise',
       'Rise straight up through the big toe, not out over the little toe'],
     sxs: ['1|Balls of both feet on the step, heels hanging free. Let the heels sink until the calf stretches.'],
-    sxt: ['1|y0.065 to2 na3 nb4 fa3 fb4 nt2 ns2 no120 ft-2 fs2 fo120'],
+    sxt: ['1|=T'],
     mk: ['0.5|anN|full height',
       '1|anN|heel below'],
     tc: ['0.5|Press through the big toe and rise as high as your ankles allow. Hold one second.',
@@ -400,7 +436,7 @@
       'Elbows sit just in front of your chest, about 30° forward, not flared flat out to the sides',
       'Ribs pulled down. Arching the lower back turns this into an incline press'],
     sxs: ['1|Bring them to ear height, palms forward. Elbow at 90°, forearm vertical, elbows just in front of your chest.'],
-    sxt: ['1|to0 na92 nb178 fa-92 fb-178 nt3 ns-2 ft-3 fs2'],
+    sxt: ['1|=T'],
     mk: ['0.25|elN|90°',
       '0.7|elN|locked out',
       '1|elN|down to 90°, no lower'],
@@ -420,7 +456,7 @@
       'Soft 10–20° bend in each elbow, set before the first rep and never changed',
       'Lead with the elbow, not the hand — the hand is just along for the ride'],
     sxs: ['1|Turn your palms to face each other so the dumbbells sit parallel. Set a soft bend in each elbow and keep exactly that bend.'],
-    sxt: ['1|to2 na8 nb14 fa-8 fb-14 nt3 ns-2 ft-3 fs2'],
+    sxt: ['1|=T'],
     mk: ['0.25|elN|soft bend',
       '0.75|elN|elbow high',
       '1|elN|resist it down'],
@@ -440,7 +476,7 @@
       'Elbows pinned to your ribs and the upper arm dead vertical: only the forearm moves',
       'The elbow is a hinge, not a lever — it does not travel forward as you curl'],
     sxs: ['1|Stand tall, bar resting on your thighs. Elbows pinned to your ribs, upper arms vertical.'],
-    sxt: ['1|to2 na2 nb4 fa2 fb4 nt2 ns1 ft-2 fs2'],
+    sxt: ['1|=T'],
     mk: ['0.3|elN|90°',
       '0.62|elN|to chest',
       '1|elN|lower it slowly'],
@@ -463,7 +499,7 @@
       'Arms are hooks: dead straight, they never pull',
       'Take the slack out of the bar until it clicks, THEN push the floor away'],
     sxs: ['1|Squeeze your armpits, pull the slack out of the bar until it clicks, and brace hard.'],
-    sxt: ['1|y0.21 to60 ne-20 na0 nb0 fa0 fb0 nt75 ns-30 no86 ft77 fs-32 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.55|knN|push the floor away',
       '1|knN|hips back first'],
     tc: ['0.45|Push the floor away with your legs. The bar drags straight up your shins.',
@@ -484,7 +520,7 @@
       'Overhand grip, hands just outside shoulder width',
       'Start each rep by pulling the shoulder blades together, then bend the elbows'],
     sxs: ['1|Hinge to about 45°, soft knees, back flat. Let the bar hang under your shoulders.'],
-    sxt: ['1|y0.03 to62 ne-22 na0 nb0 fa0 fb0 nt14 ns-8 no86 ft16 fs-10 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|elbow past the ribs',
       '1|elN|arms long'],
     tc: ['0.5|Blades together first, then drive the elbows back past your ribs.',
@@ -503,7 +539,7 @@
       'Knees stay slightly bent the whole set; never lock them straight',
       'Start the pull with the shoulder blade, not the hand'],
     sxs: ['1|Sit tall, chest lifted, arms long. Let the blades reach forward without slumping.'],
-    sxt: ['1|y0.235 to0 na72 nb76 fa72 fb76 nt70 ns16 no86 ft70 fs14 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|elbow past the ribs',
       '1|elN|full stretch'],
     tc: ['0.5|Blades down and back first, then bend the elbows to the belly button.',
@@ -542,7 +578,7 @@
       'Arms stay dead straight — the elbows never bend',
       'Head stays level; do not tip it forward or back'],
     sxs: ['1|Stand tall, arms hanging dead straight, weight resting against your thighs. Only the shoulders will move.'],
-    sxt: ['1|to0 na4 nb6 fa-4 fb-6'],
+    sxt: ['1|=T'],
     mk: null,
     tc: ['0.5|Lift the shoulders straight up toward your ears. Hold one second.',
       '1|Lower all the way down until the traps stretch.'],
@@ -560,7 +596,7 @@
       'Lock the thigh pad down first, or the weight will lift you off the seat',
       'Lean back only about 10–15°, chest lifted toward the bar'],
     sxs: ['1|Sit tall, thighs locked under the pad, leaning back about 15° with the chest lifted.'],
-    sxt: ['1|y0.235 to-12 na154 nb172 fa-154 fb-172 nt80 ns6 no86 ft-80 fs-6 fo-86'],
+    sxt: ['1|=T'],
     mk: ['0.25|elN|shoulders down first',
       '0.75|elN|elbows to the ribs',
       '1|elN|let the lats stretch'],
@@ -580,7 +616,7 @@
       'The elbows are the hinge: they point forward, stay close to your head and do not travel',
       'Only the forearms move. If the upper arms swing, go lighter'],
     sxs: ['1|Locked out overhead, elbows pointing forward and close to your head, ribs pulled down.'],
-    sxt: ['1|to2 na175 nb175 fa175 fb175'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|upper arm still',
       '1|elN|lock out'],
     tc: ['0.5|Bend only at the elbow and lower it behind your head.',
@@ -601,7 +637,7 @@
       'Elbows track back at about 45°, making an arrow shape, not a T',
       'Hands slightly wider than the shoulders, screwed into the floor'],
     sxs: ['1|Squeeze the glutes and brace. One straight line from heels to head before the first rep.'],
-    sxt: ['1|y0.33 to84 ne-30 na2 nb6 fa2 fb6 nt-84 ns-84 no-14 ft-84 fs-84 fo-14'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|elbows ≈ 45°',
       '1|elN|spread the blades'],
     tc: ['0.5|Lower with the elbows back at 45° until the chest is just off the floor.',
@@ -620,7 +656,7 @@
       'Shoulder blades stay pinched and pinned down for every rep — that is what protects the shoulder',
       'Elbows about 45° from your body, never flared straight out'],
     sxs: ['1|Dumbbells at the top of your chest, elbows just below shoulder level, blades pinned.'],
-    sxt: ['1|y0.17 to-48 ne16 na72 nb128 fa72 fb128 nt46 ns-12 no86 ft48 fs-14 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|almost touching',
       '1|elN|stretch, not strain'],
     tc: ['0.5|Press up and slightly together, following the angle of the bench.',
@@ -639,7 +675,7 @@
       'Hug a barrel — wide, fixed, soft elbows',
       'Go noticeably lighter than your press; the long lever makes it feel far heavier'],
     sxs: ['1|Press them over your chest, palms facing each other, then set a wide fixed curve in the elbows.'],
-    sxt: ['1|y0.17 to-72 ne22 na160 nb172 fa160 fb172 nt46 ns-12 no86 ft48 fs-14 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.25|elN|fixed curve',
       '0.75|elN|level with the chest',
       '1|elN|squeeze it closed'],
@@ -659,7 +695,7 @@
       'Elbows sit just below the handles, not up at shoulder height',
       'Back stays flat on the pad; do not let the shoulders roll forward as you press'],
     sxs: ['1|Elbows just below the handles, not up at shoulder height. Back flat on the pad.'],
-    sxt: ['1|y0.235 to-16 ne8 na96 nb70 fa96 fb70 nt76 ns10 no86 ft76 fs8 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|almost straight',
       '1|elN|stretch'],
     tc: ['0.5|Press out and slightly down along the machine path. Stop just short of locking.',
@@ -678,7 +714,7 @@
       'Wrists stay flat and rigid — they must not bend back under the load',
       'Elbows pinned at your sides, no swinging from the shoulders or hips'],
     sxs: ['1|Overhand grip, shoulder width. Wrists locked flat, elbows pinned to your ribs.'],
-    sxt: ['1|to2 na2 nb4 fa2 fb4 nt2 ns1 ft-2 fs2'],
+    sxt: ['1|=T'],
     mk: ['0.3|elN|90°',
       '1|elN|wrists flat'],
     tc: ['0.5|Curl up with the knuckles leading. Wrists stay flat the whole way.',
@@ -718,7 +754,7 @@
       'Push the hips back toward the wall behind you — this is a hinge, not a squat',
       'The bar slides down your thighs and stays in contact the whole way'],
     sxs: ['1|Stand tall, bar on your thighs. Unlock the knees slightly and keep exactly that bend.'],
-    sxt: ['1|to2 na2 nb4 fa2 fb4 nt8 ns-4 no86 ft10 fs-6 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.5|knN|knee angle frozen',
       '1|knN|hips through'],
     tc: ['0.5|Push the hips straight back. The bar slides down your thighs.',
@@ -737,7 +773,7 @@
       'Hips stay glued to the seat — lifting them to help means it is too heavy',
       'Point the toes gently AWAY from you and hold that: it shortens the calf so the hamstring does the work'],
     sxs: ['1|Ankle pad just above the heels, thigh pad snug, knee lined up with the pivot. Start with the legs out almost straight.'],
-    sxt: ['1|y0.235 to-6 na84 nb30 fa84 fb30 nt90 ns26 no86 ft90 fs24 fo86'],
+    sxt: ['1|=T'],
     mk: ['0.5|knN|squeeze, hold 1s',
       '1|knN|full stretch'],
     tc: ['0.5|Curl the heels down and under the seat, bending only at the knee. Hold one second.',
@@ -756,7 +792,7 @@
       'The front shin stays close to vertical; the knee travels only a little past the ankle',
       'Hips stay square and level. The back hip must not rotate open'],
     sxs: ['1|Square the hips, stand tall, and settle your weight into the front heel and mid-foot.'],
-    sxt: ['1|to4 na6 nb10 fa6 fb10 nt2 ns1 ft-40 fs-138 fo-58'],
+    sxt: ['1|=T'],
     mk: ['0.6|knN|just past 90°',
       '1|knN|front heel drive'],
     tc: ['0.5|Lower straight down. The back knee travels toward the floor, not forward.',
@@ -775,7 +811,7 @@
       'Knees track in the same direction the toes point — push them OUT the whole way down',
       'Torso stays much more upright than a normal squat; the width does the work'],
     sxs: ['1|Stand tall, dumbbell hanging at arm\'s length between your thighs, knees still pushed out over the toes.'],
-    sxt: ['1|to0 na4 nb6 fa-4 fb-6 nt20 ns2 no90 ft-20 fs-2 fo-90'],
+    sxt: ['1|=T'],
     mk: ['0.55|knN|knees out over the toes',
       '1|knN|squeeze at the top'],
     tc: ['0.5|Sit straight down between your heels, actively pushing the knees outward.',
@@ -793,7 +829,7 @@
       'Shoulders stay stacked over the wrists for the whole interval',
       'Land on the ball of the foot softly rather than stamping'],
     sxs: ['1|Squeeze the glutes and brace hard. The plank has to hold at speed.'],
-    sxt: ['1|y0.33 to84 ne-30 na2 nb6 fa2 fb6 nt-84 ns-84 no-14 ft-84 fs-84 fo-14'],
+    sxt: ['1|=T'],
     mk: null,
     tc: ['0.5|Drive one knee toward the chest, quick and light. Hips stay level.',
       '1|Switch. Shoulders stay over the wrists — do not drift back.'],
@@ -812,7 +848,7 @@
       'Feet wider than your hips gives you a stable base',
       'The supporting shoulder stays stacked over its wrist and pushed away from the floor'],
     sxs: ['1|Widen the feet to shoulder width and brace. Every tap happens without the hips turning.'],
-    sxt: ['1|y0.33 to84 ne-30 na2 nb6 fa2 fb6 nt-84 ns-84 no-14 ft-84 fs-84 fo-14'],
+    sxt: ['1|=T'],
     mk: null,
     tc: ['0.5|Lift one hand and tap the opposite shoulder. The hips do not rotate.',
       '1|Place it back under the shoulder softly, then switch.'],
@@ -831,7 +867,7 @@
       'Shoulders stay LEVEL — do not let the loaded side drop or the free side hike up',
       'Ribs down, glutes on, stand as tall as you can'],
     sxs: ['1|One heavy dumbbell in one hand, arm hanging straight. Stand dead vertical.'],
-    sxt: ['1|to0 na4 nb6 fa-4 fb-6'],
+    sxt: ['1|=T'],
     mk: null,
     tc: ['0.5|Ribs down, shoulders level, glutes on. Fight the lean.',
       '1|Hold tall for the whole interval, then switch hands.'],
@@ -849,7 +885,7 @@
       'Think of the hands as hooks; the elbows drive the movement straight down',
       'Pull the shoulders down away from your ears before you bend the elbows'],
     sxs: ['1|Sit tall with the thighs locked under the pad, chest lifted, leaning back about 15°.'],
-    sxt: ['1|y0.235 to-12 na150 nb166 fa-150 fb-166 nt80 ns6 no86 ft-80 fs-6 fo-86'],
+    sxt: ['1|=T'],
     mk: ['0.25|elN|shoulders down first',
       '0.75|elN|elbows to the floor',
       '1|elN|let the lats stretch'],
@@ -869,7 +905,7 @@
       'The torso must not twist. If your shoulder rotates up to finish, go lighter',
       'Pull the shoulder blade back toward your spine first, then drive the elbow'],
     sxs: ['1|Back flat and parallel with the floor, hips square, dumbbell hanging under the shoulder.'],
-    sxt: ['1|y0.06 to74 ne-28 na0 nb0 fa46 fb52 nt10 ns-6 no86 ft-30 fs-118 fo-46'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|elbow to the hip',
       '1|elN|full stretch'],
     tc: ['0.5|Blade back first, then drive the elbow up past your ribs to the hip.',
@@ -907,7 +943,7 @@
       'Use less weight than a straight shoulder press; the rotation is the point',
       'Ribs stay down and the back flat against the pad'],
     sxs: ['1|Palms facing you, dumbbells close together in front of your chest, elbows tucked down.'],
-    sxt: ['1|to0 na30 nb96 fa-30 fb-96 nt3 ns-2 ft-3 fs2'],
+    sxt: ['1|=T'],
     mk: ['0.25|elN|palms toward you',
       '0.75|elN|palms forward, locked',
       '1|elN|rotate as you lower'],
@@ -927,7 +963,7 @@
       'Elbows pinned to your ribs; they never travel forward',
       'No swinging at the hips or leaning back to help the weight up'],
     sxs: ['1|Stand tall, palms forward, elbows pinned to your ribs and shoulders back.'],
-    sxt: ['1|to2 na2 nb4 fa2 fb4 nt2 ns1 ft-2 fs2'],
+    sxt: ['1|=T'],
     mk: ['0.3|elN|90°',
       '1|elN|straighten fully'],
     tc: ['0.5|Curl by bending only at the elbow, up to the front of the shoulder.',
@@ -946,7 +982,7 @@
       'Elbows travel backward and stay close; never let them flare out sideways',
       'Shoulders stay pressed down the whole rep — never sink into a shrug'],
     sxs: ['1|Arms straight, shoulders pulled down away from your ears, a small forward lean.'],
-    sxt: ['1|y-0.04 to6 na4 nb6 fa4 fb6 nt34 ns-96 no-40 ft36 fs-98 fo-42'],
+    sxt: ['1|=T'],
     mk: ['0.5|elN|upper arm to parallel',
       '1|elN|shoulders down'],
     tc: ['0.5|Bend the elbows straight back, close to your body, to upper-arm-parallel.',
@@ -1012,8 +1048,20 @@
     _e.sd = _r.sd;
     _e.gr = _r.gr;
     _e.ss = _r.ss.concat(_e.sxs || []);
-    _e.st = _r.st.concat(tr.apply(null, _e.sxt || []));
+    /* '=T' means "the pose the train reel opens in". The setup reel has to
+     * hand over in exactly that pose or the figure snaps between the reels,
+     * so writing it out a second time is only a chance to write it
+     * differently. Exercises whose train reel changes camera (vwT) still
+     * spell their closing pose out, because it is in the setup camera. */
+    _e.st = _r.st.concat((_e.sxt || []).map(function (k) {
+      var c = k.indexOf('|'), body = k.slice(c + 1);
+      return { t: parseFloat(k.slice(0, c)),
+        p: body === '=T' ? _e.tk[0].p : q(body) };
+    }));
   }
+  _walk(EX);
+  _walk(RIG);
+
   /* ------------------------------------------------------------------ *
    * Rendering
    * ------------------------------------------------------------------ */
@@ -1877,7 +1925,9 @@
       /* ---------------- shell ---------------- */
 
       var style = document.createElement('style');
-      style.textContent = [
+      /* _x so the build may share its phrase dictionary with the stylesheet;
+         it is the identity in this readable source. */
+      style.textContent = _x([
         '.gt{position:absolute;inset:0;display:flex;flex-direction:column;font-family:' + FONT_UI + ';',
         'color:' + C.ink + ';-webkit-user-select:none;user-select:none;overflow:hidden;}',
         '.gt *{box-sizing:border-box;}',
@@ -1967,7 +2017,7 @@
         '.sheet h3{font:800 22px/1.1 ' + FONT_DISPLAY + ';letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px;}',
         '.sheet li{font:500 13px/1.55 ' + FONT_UI + ';color:' + C.dim + ';margin-bottom:9px;}',
         '.hidden{display:none;}'
-      ].join('');
+      ].join(''));
       root.appendChild(style);
 
       var safe = ctx.safeArea || {};

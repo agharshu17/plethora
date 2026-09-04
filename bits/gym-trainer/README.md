@@ -44,16 +44,26 @@ breaking on them.
 
 ## Building and uploading
 
-    python3 dev/build.py     # main.js -> build/main.js, strip + node --check
+    python3 dev/build.py     # main.js -> build/main.js
+    node dev/verify.mjs      # prove the artifact is still the same Bit
 
-`dev/build.py` strips comments and indentation and squeezes whitespace outside
-string literals. It **never minifies** — mangled source is rejected by the
-draft validator — and it fails the build if it finds a URL anywhere in the
-artifact, including in a comment.
+`dev/build.py` **never minifies** — mangled source is rejected by the draft
+validator outright — and it fails the build if it finds a URL anywhere in the
+artifact, including in a comment. It strips comments and indentation, squeezes
+whitespace outside string literals, joins lines only where automatic semicolon
+insertion cannot apply, and compresses repeated phrases in the exercise library
+and the stylesheet into a table `main.js` expands at load. 118 KB of readable
+source becomes a 77 KB artifact with every literal still present, once.
 
-The pairing and upload flow, and what the validator's error messages actually
-mean, are in the **`plethora-bit`** skill at the repo root rather than here,
-because none of it is specific to this Bit.
+`dev/verify.mjs` runs both files and compares the data they build, so a
+whitespace rule that quietly ate a token cannot ship. `node --check` would not
+catch it, and screenshots cannot either, because the animation is time-driven.
+
+The size that matters is **not** the 2 MiB package limit but a ~3 second
+upload deadline, and it moves with what the manifest declares. See the note at
+the top of `dev/build.py` for the measurements, and the **`plethora-bit`**
+skill at the repo root for the pairing flow, the upload call, and how to tell
+the failure modes apart.
 
 ## The rig
 
