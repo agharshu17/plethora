@@ -32,11 +32,85 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'main.js')
 OUT_DIR = os.path.join(ROOT, 'build')
 OUT = os.path.join(OUT_DIR, 'main.js')
-LIMIT = 100000   # measured accepted; ~160 KB times out server-side
+LIMIT = 92000    # measured: 92.6 KB uploads first try, 93.5 KB needs
+                 # retries, 95.9 KB and up always times out. See the note above.
+
+
+def _segments(src):
+    """Split into (is_string, text) runs so rules only touch real code."""
+    segs, buf, i, n = [], [], 0, len(src)
+    while i < n:
+        c = src[i]
+        if c in '"\'`':
+            segs.append((False, ''.join(buf))); buf = []
+            j, q = i + 1, c
+            while j < n:
+                if src[j] == '\\':
+                    j += 2; continue
+                if src[j] == q:
+                    j += 1; break
+                j += 1
+            segs.append((True, src[i:j]))
+            i = j
+            continue
+        buf.append(c); i += 1
+    segs.append((False, ''.join(buf)))
+    return segs
+
+
+# Whitespace-only rules. Every identifier and every literal survives intact,
+# which is what the draft validator needs - minifying instead gets the upload
+# rejected outright. See the note at the top of this file.
+_RULES = [
+    (re.compile(r'(?<=[,:;{\[(])[ ]+'), ''),
+    (re.compile(r'[ ]+(?=[)\]}])'), ''),
+    (re.compile(r'[ ]*(&&|\|\||===|!==|<=|>=|=>)[ ]*'), r'\1'),
+    (re.compile(r'[ ]+(?=[({])'), ''),
+]
+
+
+_CSS_RULES = [
+    (re.compile(r'\s*([{};:,])\s*'), r'\1'),
+    (re.compile(r';\}'), '}'),
+]
+
+
+def squeeze_css(src):
+    """The stylesheet is built by joining string literals. CSS is whitespace
+    insensitive around its punctuation, so those particular literals can be
+    squeezed further than prose ever could."""
+    a = src.find('style.textContent=[')
+    if a < 0:
+        return src
+    b = src.find("].join('')", a)
+    if b < 0:
+        return src
+    head, body, tail = src[:a], src[a:b], src[b:]
+    out = []
+    for is_str, text in _segments(body):
+        if is_str and len(text) > 2:
+            q = text[0]
+            inner = text[1:-1]
+            for pat, rep in _CSS_RULES:
+                inner = pat.sub(rep, inner)
+            text = q + inner + q
+        out.append(text)
+    return head + ''.join(out) + tail
+
+
+def squeeze(src):
+    src = squeeze_css(src)
+    out = []
+    for is_str, text in _segments(src):
+        if not is_str:
+            for pat, rep in _RULES:
+                text = pat.sub(rep, text)
+        out.append(text)
+    return ''.join(out)
 
 
 def strip(src):
-    """Drop comments and leading indentation. No other transform."""
+    """Drop comments and leading indentation, then squeeze safe whitespace."""
     out, in_block = [], False
     for line in src.split('\n'):
         stripped = line.strip()
@@ -50,11 +124,11 @@ def strip(src):
             continue
         if stripped.startswith('//'):
             continue
-        line = re.sub(r'^\s+', ' ', line)
+        line = line.lstrip()
         if not line.strip():
             continue
         out.append(line)
-    return '\n'.join(out) + '\n'
+    return squeeze('\n'.join(out) + '\n')
 
 
 def main():

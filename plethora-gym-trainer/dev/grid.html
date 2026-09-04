@@ -8,7 +8,7 @@
 window.__drawGrid = function (phases, only) {
   var T = window.__GT;
   var ids = Object.keys(T.EX).filter(function (k) {
-    return k !== 'idle' && k !== 'cheer' && (!only || k === only);
+    return k !== 'idle' && k !== 'cheer' && (!only || only.split(',').indexOf(k) >= 0);
   });
   var variants = window.__variants || ['setup', 'train'];
   var cols = phases.length * variants.length, cw = 168, ch = 236, lh = 24;
