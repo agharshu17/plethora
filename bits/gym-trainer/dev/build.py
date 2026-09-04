@@ -4,24 +4,27 @@
 Strips comments and leading indentation, nothing else. main.js stays readable
 in the repo while the uploaded source stays small.
 
-DO NOT MINIFY. Measured against the live draft endpoint:
+DO NOT MINIFY. terser output is REJECTED at any size with the generic
+"This bit uses unsupported remote resources" error, while the identical code
+unminified is accepted. The reason is in the published contract: the validator
+statically analyses the source, and library/font arguments "may be direct
+literals or simple const string aliases, never concatenated/template/
+runtime-built URLs". Mangling defeats that analysis, so it reads as a remote
+resource. Strip whitespace only - every identifier and literal survives intact.
 
-  * terser output is REJECTED, at any size, with the generic
-    "This bit uses unsupported remote resources" error. The identical code
-    unminified is accepted. The validator statically analyses the source, and
-    mangling defeats it.
-  * The size ceiling is NOT ~80 KB. Measured in BYTES: ~93.0 KB uploads on
-    the first try, ~93.9 KB needs retries, ~96.3 KB and up always fails with
-    "Request deadline exceeded" - a server timeout, not validation. A padded
-    100 KB probe of trivial statements passed, so the budget is not purely
-    size; real code with many string literals costs the validator more.
-  * No URLs anywhere in the source, not even in a comment. A GitHub link in a
-    build banner was enough to trip the same remote-resources error.
+No URLs anywhere in the source, not even in a comment. A link in a build
+banner was enough to trip the same error.
 
-An earlier version of this file claimed an ~80 KB budget and blamed size for
-that generic error. Both halves were wrong, and it cost a round of redesign.
-The message names remote resources and says nothing about size: trust it and
-bisect against the endpoint rather than assuming.
+On size: the published package limit is 2 MiB, so this Bit at ~95 KB is
+nowhere near it and there is no reason to contort the code to stay small.
+An earlier note in this repo claimed an ~80 KB budget and then a ~93 KB one,
+and both sent a redesign down the wrong path. What was actually measured was
+upload TIMEOUTS ("Request deadline exceeded") starting around 96 KB - a slow
+validator, not a size cap, and flaky enough that a passing size often failed
+once or twice first. SOFT_LIMIT below is a warning line for that flakiness,
+not the contract.
+
+Measure BYTES, not characters: the coaching text is full of multi-byte UTF-8.
 
     python3 dev/build.py        # writes build/main.js
 """
@@ -34,8 +37,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'main.js')
 OUT_DIR = os.path.join(ROOT, 'build')
 OUT = os.path.join(OUT_DIR, 'main.js')
-LIMIT = 92500    # measured in BYTES: ~93.0 KB uploads first try, ~93.9 KB
-                 # needs retries, ~96.3 KB and up always times out.
+# The contract's real ceiling. Nothing here is close to it.
+CEILING = 2 * 1024 * 1024
+# The far lower line where draft uploads were observed to start timing out.
+SOFT_LIMIT = 92500
 
 
 def _segments(src):
@@ -158,9 +163,14 @@ def main():
     print('main.js        %6d bytes' % src_b)
     print('build/main.js  %6d bytes  (%.0f%% of source)'
           % (built_b, 100.0 * built_b / src_b))
-    print('headroom       %6d bytes under the %d ceiling' % (LIMIT - built_b, LIMIT))
-    if built_b > LIMIT:
-        print('WARNING: over budget — the draft upload may time out.')
+    print('package limit  %6d bytes  (%.1f%% used)'
+          % (CEILING, 100.0 * built_b / CEILING))
+    if built_b > CEILING:
+        raise SystemExit('over the %d byte package limit' % CEILING)
+    if built_b > SOFT_LIMIT:
+        print('note: past %d bytes draft uploads have been seen to time out.\n'
+              '      That is validator slowness, not the size limit - retry '
+              'before\n      concluding anything about size.' % SOFT_LIMIT)
 
 
 if __name__ == '__main__':

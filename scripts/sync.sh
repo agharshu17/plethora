@@ -4,7 +4,7 @@
 # directory has twice nested this repo inside its own subfolder.
 set -euo pipefail
 SRC=${1:-/home/user/bitespeed/plethora-gym-trainer}
-DEST=$(cd "$(dirname "$0")" && pwd)/plethora-gym-trainer
+DEST=$(cd "$(dirname "$0")/.." && pwd)/bits/gym-trainer
 [ -f "$SRC/main.js" ] || { echo "no main.js in $SRC" >&2; exit 1; }
 rm -rf "$DEST" && mkdir -p "$DEST"
 (cd "$SRC" && tar cf - \
